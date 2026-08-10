@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Gerador de Molduras</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #f4f4f4;
+            font-family: 'Roboto', sans-serif;
+            color: #222;
+        }
+
+        /* CABEÇALHO */
+
+        header {
+            background: #111;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-family: 'Anton', sans-serif;
+            font-size: 42px;
+            letter-spacing: 1px;
+            color: white;
+            text-transform: uppercase;
+        }
+
+        header p {
+            margin-top: 5px;
+            color: #bbb;
+            font-size: 15px;
+        }
+
+        /* CONTEÚDO */
+
+        main {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 45px 20px;
+        }
+
+        .titulo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .titulo h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: 32px;
+            text-transform: uppercase;
+        }
+
+        .titulo p {
+            margin-top: 8px;
+            color: #666;
+        }
+
+        /* GRID DAS CORRIDAS */
+
+        .corridas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+
+        /* CARD */
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+        }
+
+        .card-imagem {
+            width: 100%;
+            height: 180px;
+            background: #ddd;
+            overflow: hidden;
+        }
+
+        .card-imagem img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .card-conteudo {
+            padding: 20px;
+        }
+
+        .card-conteudo h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 25px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .card-conteudo p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        /* BOTÃO */
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            border-radius: 8px;
+            background: #111;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #333;
+        }
+
+        /* RODAPÉ */
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: #888;
+            font-size: 13px;
+        }
+
+        /* CELULAR */
+
+        @media (max-width: 600px) {
+
+            header {
+                padding: 22px 15px;
+            }
+
+            header h1 {
+                font-size: 32px;
+            }
+
+            main {
+                padding: 30px 15px;
+            }
+
+            .titulo h2 {
+                font-size: 27px;
+            }
+
+            .corridas {
+                grid-template-columns: 1fr;
+            }
+
+            .card-imagem {
+                height: 170px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>Gerador de Stories - Cronossauros</h1>
+        <p>Escolha sua corrida e crie sua foto</p>
+    </header>
+
+    <main>
+
+        <section class="titulo">
+            <h2>Escolha a sua corrida</h2>
+            <p>Selecione o evento para criar sua moldura personalizada.</p>
+        </section>
+
+        <section class="corridas">
+
+            <!-- CORRIDA 1 -->
+
+            <div class="card">
+
+                <div class="card-imagem">
+                    <img src="assets/ranking_pedagogico.png"
+                         alt="Corrida Greenville">
+                </div>
+
+                <div class="card-conteudo">
+
+                    <h3>Greenville</h3>
+
+                    <p>
+                        Ranking Pedagógico - 3ª Etapa.
+                    </p>
+
+                    <a href="corridas/ranking_pedagogico.html" class="btn">
+                        Criar minha moldura
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- CORRIDA 2 -->
+
+            <div class="card">
+
+                <div class="card-imagem">
+                    <img src="assets/corrida_monster.png"
+                         alt="Corrida MonsterGym">
+                </div>
+
+                <div class="card-conteudo">
+
+                    <h3>MONSTERGYM</h3>
+
+                    <p>
+                        Corrida MonsterGym - Rio Brilhante
+                    </p>
+
+                    <a href="corridas/corrida_monster.html" class="btn">
+                        Criar minha moldura
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        © 2026 - Gerador de Stories - Vecthor Teixeira
+    </footer>
+
+</body>
+</html>

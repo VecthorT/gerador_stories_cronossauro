@@ -1,0 +1,261 @@
+
+/* =========================
+   CONFIGURAÇÕES GERAIS
+========================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: #f1f1f1;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #222;
+}
+
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.header {
+    background: #111;
+    color: white;
+
+    text-align: center;
+
+    padding: 30px 20px;
+}
+
+.header h1 {
+    margin: 0;
+
+    font-size: 42px;
+    font-weight: 900;
+
+    letter-spacing: 2px;
+}
+
+.header h2 {
+    margin-top: 5px;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    letter-spacing: 1px;
+}
+
+.header p {
+    margin-top: 12px;
+
+    font-size: 15px;
+    line-height: 1.5;
+
+    color: #ccc;
+}
+
+
+/* =========================
+   BOTÕES
+========================= */
+
+.actions {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 25px 20px 10px;
+
+    flex-wrap: wrap;
+}
+
+.upload,
+#download {
+    display: inline-flex;
+
+    justify-content: center;
+    align-items: center;
+
+    min-width: 190px;
+
+    padding: 13px 20px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #111;
+    color: white;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.upload:hover,
+#download:hover:not(:disabled) {
+    background: #333;
+
+    transform: translateY(-2px);
+}
+
+#download:disabled {
+    background: #999;
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================
+   TEXTO DE MARCAÇÃO
+========================= */
+
+.marque {
+    text-align: center;
+
+    margin: 15px auto 25px;
+
+    padding: 0 15px;
+
+    color: #555;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+.marque strong {
+    color: #111;
+}
+
+
+/* =========================
+   ÁREA DA IMAGEM
+========================= */
+
+.preview {
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 10px 20px 30px;
+}
+
+
+/* =========================
+   CANVAS
+========================= */
+
+#canvas {
+    display: block;
+
+    width: 100%;
+    max-width: 720px;
+
+    height: auto;
+
+    background: white;
+
+    border-radius: 8px;
+
+    box-shadow:
+        0 5px 25px rgba(0, 0, 0, 0.15);
+}
+
+
+/* =========================
+   MENSAGEM
+========================= */
+
+.mensagem {
+    width: 100%;
+
+    text-align: center;
+
+    margin: 0 auto 30px;
+
+    padding: 0 20px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #222;
+}
+
+
+/* =========================
+   CELULAR
+========================= */
+
+@media (max-width: 600px) {
+
+    .header {
+        padding: 25px 15px;
+    }
+
+    .header h1 {
+        font-size: 32px;
+    }
+
+    .header h2 {
+        font-size: 19px;
+    }
+
+    .header p {
+        font-size: 14px;
+    }
+
+
+    .actions {
+        flex-direction: column;
+
+        gap: 10px;
+
+        padding-top: 20px;
+    }
+
+
+    .upload,
+    #download {
+        width: 100%;
+
+        max-width: 350px;
+    }
+
+
+    .marque {
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
+
+
+    .preview {
+        padding: 5px 10px 25px;
+    }
+
+
+    #canvas {
+        width: 100%;
+
+        border-radius: 5px;
+    }
+}
