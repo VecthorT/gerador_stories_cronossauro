@@ -6,10 +6,21 @@ const salvar = document.getElementById("download");
 const mensagem = document.getElementById("mensagem");
 
 const template = new Image();
+
+
+// =====================================
+// DESCOBRE O NOME DA PÁGINA
+// =====================================
+
 const nomePagina = window.location.pathname
     .split("/")
     .pop()
     .replace(".html", "");
+
+
+// =====================================
+// CAMINHO DA MOLDURA
+// =====================================
 
 const caminhoMoldura =
     `../assets/${nomePagina}.png`;
@@ -20,22 +31,41 @@ console.log("Página:", nomePagina);
 console.log("Moldura:", caminhoMoldura);
 
 
+// =====================================
+// ESTADOS
+// =====================================
+
+let molduraCarregada = false;
+let fotoCarregada = false;
+
+
 // Botão começa desativado
 salvar.disabled = true;
 
 
-// Quando a moldura carregar
+// =====================================
+// MOLDURA CARREGADA
+// =====================================
+
 template.onload = function () {
 
     console.log("Moldura carregada.");
 
+    molduraCarregada = true;
+
 };
 
 
-// Erro ao carregar moldura
+// =====================================
+// ERRO AO CARREGAR MOLDURA
+// =====================================
+
 template.onerror = function () {
 
-    console.error("Não foi possível carregar a moldura.");
+    console.error(
+        "Não foi possível carregar a moldura:",
+        caminhoMoldura
+    );
 
     mensagem.textContent =
         "Erro ao carregar a moldura.";
@@ -43,272 +73,481 @@ template.onerror = function () {
 };
 
 
-// Escolher imagem
-upload.addEventListener("change", function (e) {
+// =====================================
+// ESCOLHER FOTO
+// =====================================
 
-    const file = e.target.files[0];
+upload.addEventListener(
+    "change",
+    function (e) {
 
-    if (!file) {
-
-        salvar.disabled = true;
-
-        return;
-
-    }
+        const file = e.target.files[0];
 
 
-    const img = new Image();
+        if (!file) {
 
-    img.onload = function () {
+            fotoCarregada = false;
 
-        // Limpa o canvas
-        ctx.clearRect(
-            0,
-            0,
-            canvas.width,
-            canvas.height
-        );
+            salvar.disabled = true;
+
+            return;
+        }
 
 
-        // Calcula proporção
-        const hRatio = canvas.width / img.width;
-        const vRatio = canvas.height / img.height;
-
-        const ratio = Math.max(
-            hRatio,
-            vRatio
-        );
+        const img = new Image();
 
 
-        const newWidth =
-            img.width * ratio;
+        img.onload = function () {
 
-        const newHeight =
-            img.height * ratio;
+            // =====================================
+            // LIMPA CANVAS
+            // =====================================
 
-
-        // Centraliza
-        const x =
-            (canvas.width - newWidth) / 2;
-
-        const y =
-            (canvas.height - newHeight) / 2;
-
-
-        // Desenha foto
-        ctx.drawImage(
-            img,
-            x,
-            y,
-            newWidth,
-            newHeight
-        );
-
-
-        // Desenha moldura
-        if (template.complete) {
-
-            ctx.drawImage(
-                template,
+            ctx.clearRect(
                 0,
                 0,
                 canvas.width,
                 canvas.height
             );
 
-            salvar.disabled = false;
+
+            // =====================================
+            // CALCULA PROPORÇÃO
+            // =====================================
+
+            const hRatio =
+                canvas.width / img.width;
+
+            const vRatio =
+                canvas.height / img.height;
+
+            const ratio =
+                Math.max(
+                    hRatio,
+                    vRatio
+                );
+
+
+            const newWidth =
+                img.width * ratio;
+
+            const newHeight =
+                img.height * ratio;
+
+
+            // =====================================
+            // CENTRALIZA
+            // =====================================
+
+            const x =
+                (canvas.width - newWidth) / 2;
+
+            const y =
+                (canvas.height - newHeight) / 2;
+
+
+            // =====================================
+            // DESENHA FOTO
+            // =====================================
+
+            ctx.drawImage(
+                img,
+                x,
+                y,
+                newWidth,
+                newHeight
+            );
+
+
+            // =====================================
+            // DESENHA MOLDURA
+            // =====================================
+
+            if (molduraCarregada) {
+
+                ctx.drawImage(
+                    template,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+
+                fotoCarregada = true;
+
+                salvar.disabled = false;
+
+                mensagem.textContent =
+                    "Sua arte está pronta!";
+
+            } else {
+
+                fotoCarregada = false;
+
+                salvar.disabled = true;
+
+                mensagem.textContent =
+                    "Aguarde a moldura carregar.";
+
+            }
+
+
+            // Libera memória da foto
+            URL.revokeObjectURL(img.src);
+
+        };
+
+
+        // =====================================
+        // ERRO DA FOTO
+        // =====================================
+
+        img.onerror = function () {
+
+            fotoCarregada = false;
+
+            salvar.disabled = true;
 
             mensagem.textContent =
-                "Sua arte está pronta!";
+                "Não foi possível carregar essa foto.";
 
-        }
-
-    };
+        };
 
 
-    img.onerror = function () {
+        // =====================================
+        // CARREGA FOTO
+        // =====================================
 
-        mensagem.textContent =
-            "Não foi possível carregar essa foto.";
+        img.src =
+            URL.createObjectURL(file);
 
-    };
-
-
-    img.src = URL.createObjectURL(file);
-
-});
+    }
+);
 
 
 // =====================================
 // SALVAR IMAGEM
 // =====================================
 
-salvar.addEventListener("click", function () {
+salvar.addEventListener(
+    "click",
+    async function () {
 
-    // Converte Canvas para Blob
-    canvas.toBlob(function (blob) {
-
-        if (!blob) {
+        if (!fotoCarregada) {
 
             mensagem.textContent =
-                "Não foi possível gerar a imagem.";
+                "Escolha uma foto primeiro.";
 
             return;
-
         }
 
 
-        // Cria URL temporária
-        const url =
-            URL.createObjectURL(blob);
+        mensagem.textContent =
+            "Preparando sua imagem...";
 
 
-        // Detecta iPhone / iPad
-        const isIOS =
-            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-            (navigator.platform === "MacIntel" &&
-             navigator.maxTouchPoints > 1);
+        // =====================================
+        // TRANSFORMA CANVAS EM BLOB
+        // =====================================
+
+        canvas.toBlob(
+            async function (blob) {
+
+                if (!blob) {
+
+                    mensagem.textContent =
+                        "Não foi possível gerar a imagem.";
+
+                    return;
+                }
 
 
-        if (isIOS) {
+                // =====================================
+                // NOME DO ARQUIVO
+                // =====================================
 
-            /*
-             * Safari no iPhone não lida bem
-             * com download automático.
-             *
-             * Abrimos a imagem em uma nova aba.
-             */
+                const nomeArquivo =
+                    `cronossauros-${nomePagina}.png`;
 
-            const novaAba =
-                window.open();
 
-            if (novaAba) {
+                // =====================================
+                // DETECTA IOS
+                // =====================================
 
-                novaAba.document.write(`
+                const isIOS =
+                    /iPad|iPhone|iPod/.test(
+                        navigator.userAgent
+                    ) ||
+                    (
+                        navigator.platform === "MacIntel" &&
+                        navigator.maxTouchPoints > 1
+                    );
 
-                    <!DOCTYPE html>
 
-                    <html>
+                // =====================================
+                // IPHONE / IPAD
+                // =====================================
 
-                    <head>
+                if (isIOS) {
 
-                        <meta
-                            name="viewport"
-                            content="width=device-width,
-                            initial-scale=1.0">
+                    await salvarNoIOS(
+                        blob,
+                        nomeArquivo
+                    );
 
-                        <title>
-                            Sua arte
-                        </title>
+                    return;
+                }
 
-                        <style>
 
-                            body {
+                // =====================================
+                // ANDROID / COMPUTADOR
+                // =====================================
 
-                                margin: 0;
+                const url =
+                    URL.createObjectURL(blob);
 
-                                background: #111;
 
-                                display: flex;
+                const link =
+                    document.createElement("a");
 
-                                flex-direction: column;
 
-                                align-items: center;
+                link.href = url;
 
-                                justify-content: center;
+                link.download =
+                    nomeArquivo;
 
-                                min-height: 100vh;
 
-                                font-family: Arial;
+                document.body.appendChild(link);
 
-                                color: white;
+                link.click();
 
-                                text-align: center;
+                document.body.removeChild(link);
 
-                                padding: 20px;
-
-                                box-sizing: border-box;
-
-                            }
-
-                            img {
-
-                                max-width: 100%;
-
-                                max-height: 80vh;
-
-                            }
-
-                            p {
-
-                                color: #ffc400;
-
-                                font-weight: bold;
-
-                            }
-
-                        </style>
-
-                    </head>
-
-                    <body>
-
-                        <p>
-                            Toque e segure a imagem
-                            para salvar na Fotos
-                        </p>
-
-                        <img src="${url}">
-
-                    </body>
-
-                    </html>
-
-                `);
-
-                novaAba.document.close();
-
-            } else {
 
                 mensagem.textContent =
-                    "Permita a abertura da nova aba para salvar a imagem.";
-
-            }
-
-        } else {
-
-            // Chrome / Edge / Firefox / Android
-
-            const link =
-                document.createElement("a");
-
-            link.href = url;
-
-            link.download =
-                "cronossauros.png";
+                    "Imagem salva com sucesso!";
 
 
-            document.body.appendChild(link);
+                setTimeout(
+                    function () {
 
-            link.click();
+                        URL.revokeObjectURL(url);
 
-            document.body.removeChild(link);
+                    },
+                    10000
+                );
+
+            },
+            "image/png"
+        );
+
+    }
+);
+
+
+// =====================================
+// SALVAR NO IPHONE / IPAD
+// =====================================
+
+async function salvarNoIOS(
+    blob,
+    nomeArquivo
+) {
+
+    try {
+
+        // =====================================
+        // CRIA ARQUIVO REAL
+        // =====================================
+
+        const arquivo =
+            new File(
+                [blob],
+                nomeArquivo,
+                {
+                    type: "image/png"
+                }
+            );
+
+
+        // =====================================
+        // VERIFICA COMPARTILHAMENTO
+        // =====================================
+
+        if (
+            navigator.share &&
+            navigator.canShare &&
+            navigator.canShare({
+                files: [arquivo]
+            })
+        ) {
+
+            mensagem.textContent =
+                "Abrindo opções para salvar...";
+
+
+            await navigator.share({
+
+                files: [arquivo],
+
+                title:
+                    "Minha arte Cronossauros",
+
+                text:
+                    "Minha arte da corrida!"
+
+            });
 
 
             mensagem.textContent =
-                "Imagem salva com sucesso!";
+                "Imagem pronta para salvar!";
 
+
+            return;
         }
 
 
-        // Libera memória depois
-        setTimeout(function () {
+        // =====================================
+        // FALLBACK IOS
+        // =====================================
+
+        mostrarImagemParaSalvar(blob);
+
+    }
+
+    catch (erro) {
+
+        console.log(
+            "Compartilhamento cancelado ou indisponível:",
+            erro
+        );
+
+
+        // Se o usuário apenas fechou o menu
+        if (
+            erro &&
+            erro.name === "AbortError"
+        ) {
+
+            mensagem.textContent =
+                "Compartilhamento cancelado.";
+
+            return;
+        }
+
+
+        // Qualquer outro erro
+        mostrarImagemParaSalvar(blob);
+
+    }
+
+}
+
+
+// =====================================
+// FALLBACK
+// MOSTRA IMAGEM NA TELA
+// =====================================
+
+function mostrarImagemParaSalvar(blob) {
+
+    const url =
+        URL.createObjectURL(blob);
+
+
+    // Remove tela anterior
+    const antigo =
+        document.getElementById(
+            "telaSalvarIOS"
+        );
+
+
+    if (antigo) {
+
+        antigo.remove();
+
+    }
+
+
+    // =====================================
+    // CRIA TELA
+    // =====================================
+
+    const tela =
+        document.createElement("div");
+
+
+    tela.id =
+        "telaSalvarIOS";
+
+
+    tela.innerHTML = `
+
+        <div class="ios-conteudo">
+
+            <button
+                id="fecharIOS"
+                class="ios-fechar"
+            >
+                ×
+            </button>
+
+
+            <p class="ios-titulo">
+
+                Sua arte está pronta!
+
+            </p>
+
+
+            <p class="ios-instrucao">
+
+                Toque e segure a imagem
+                e escolha
+                <strong>
+                    "Salvar em Fotos"
+                </strong>
+
+            </p>
+
+
+            <img
+                src="${url}"
+                class="ios-imagem"
+                alt="Sua arte"
+            >
+
+        </div>
+
+    `;
+
+
+    document.body.appendChild(tela);
+
+
+    // =====================================
+    // FECHAR
+    // =====================================
+
+    const fechar =
+        document.getElementById(
+            "fecharIOS"
+        );
+
+
+    fechar.addEventListener(
+        "click",
+        function () {
+
+            tela.remove();
 
             URL.revokeObjectURL(url);
 
-        }, 10000);
+        }
+    );
 
 
-    }, "image/png");
+    mensagem.textContent =
+        "Toque e segure a imagem para salvar.";
 
-});
+}

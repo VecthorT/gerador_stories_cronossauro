@@ -1,0 +1,77 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Gerador de Stories - Cronossauros</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../style.css">
+
+
+<div class="container">
+
+    <div class="header">
+
+        <h1>CRONOSSAUROS</h1>
+
+        <h2>CORRIDA ELLITE FITNESS</h2>
+
+        <p>
+            Escolha sua foto e crie sua arte para compartilhar nos Stories.
+        </p>
+
+    </div>
+
+
+    <div class="actions">
+
+        <label class="upload" for="upload">
+            📷 Escolher Foto
+        </label>
+
+        <button id="download" disabled>
+            ⬇ Baixar Imagem
+        </button>
+
+    </div>
+
+
+    <p class="marque">
+
+        Não esqueça de marcar:<br>
+
+        <strong>@circuitodinossauros</strong>
+        e
+        <strong>@ellitefitness_academia</strong>
+
+    </p>
+
+
+    <input
+        type="file"
+        id="upload"
+        accept="image/*"
+        hidden
+    >
+
+
+    <div class="preview">
+
+        <canvas
+            id="canvas"
+            width="720"
+            height="1080">
+        </canvas>
+
+    </div>
+
+
+    <div id="mensagem" class="mensagem"></div>
+
+</div>
+
+
+<script src="../script.js"></script>
