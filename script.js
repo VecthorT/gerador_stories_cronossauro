@@ -47,11 +47,11 @@ salvar.disabled = true;
 // MOLDURA CARREGADA
 // =====================================
 
-template.onload = function () {
+molduraCarregada = true;
 
-    console.log("Moldura carregada.");
+console.log("Moldura carregada.");
 
-    molduraCarregada = true;
+    template.onload = function () {
 
 };
 
