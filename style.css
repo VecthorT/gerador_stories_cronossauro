@@ -259,3 +259,39 @@ body {
         border-radius: 5px;
     }
 }
+
+/* CAMPO DO NOME */
+
+.area-nome {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.area-nome[hidden] {
+    display: none;
+}
+
+.area-nome label {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.area-nome input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    outline: none;
+}
+
+.area-nome input:focus {
+    border-color: #222;
+}

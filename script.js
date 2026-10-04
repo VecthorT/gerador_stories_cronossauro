@@ -1,3 +1,4 @@
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -5,8 +6,10 @@ const upload = document.getElementById("upload");
 const salvar = document.getElementById("download");
 const mensagem = document.getElementById("mensagem");
 
-const template = new Image();
+const areaNome = document.getElementById("areaNome");
+const nomePessoa = document.getElementById("nomePessoa");
 
+const template = new Image();
 
 // =====================================
 // DESCOBRE O NOME DA PÁGINA
@@ -17,19 +20,42 @@ const nomePagina = window.location.pathname
     .pop()
     .replace(".html", "");
 
-
 // =====================================
 // CAMINHO DA MOLDURA
 // =====================================
 
-const caminhoMoldura =
-    `../assets/${nomePagina}.png`;
+const caminhoMoldura = `../assets/${nomePagina}.png`;
 
 template.src = caminhoMoldura;
 
-console.log("Página:", nomePagina);
-console.log("Moldura:", caminhoMoldura);
+// =====================================
+// CONFIGURAÇÕES DA FOTO E DO NOME
+// =====================================
 
+// Área na qual a foto será encaixada.
+// Valores em pixels, relativos ao canvas.
+
+const areaFoto = {
+    x: 60,
+    y: -50,
+    largura: 600,
+    altura: 1500    
+};
+
+// Configuração do nome
+// Altere estes valores para posicionar o texto.
+
+const configNome = {
+    x: canvas.width / 2,
+    y: canvas.height - 280,
+    tamanho: 48,
+    cor: "#FFFFFF",
+    fonte: "Anton",
+    alinhamento: "center",
+    contorno: true,
+    corContorno: "#000000",
+    espessuraContorno: 3
+};
 
 // =====================================
 // ESTADOS
@@ -37,342 +63,287 @@ console.log("Moldura:", caminhoMoldura);
 
 let molduraCarregada = false;
 let fotoCarregada = false;
-
+let fotoAtual = null;
 
 // Botão começa desativado
 salvar.disabled = true;
 
-
 // =====================================
-// MOLDURA CARREGADA
+// CARREGAR MOLDURA
 // =====================================
 
-molduraCarregada = true;
+template.onload = function () {
+    molduraCarregada = true;
 
-console.log("Moldura carregada.");
+    console.log("Moldura carregada.");
 
-    template.onload = function () {
-
+    redesenharArte();
 };
 
-
-// =====================================
-// ERRO AO CARREGAR MOLDURA
-// =====================================
-
 template.onerror = function () {
+    molduraCarregada = false;
 
     console.error(
         "Não foi possível carregar a moldura:",
         caminhoMoldura
     );
 
-    mensagem.textContent =
-        "Erro ao carregar a moldura.";
-
+    mensagem.textContent = "Erro ao carregar a moldura.";
 };
 
+// =====================================
+// DESENHAR FOTO
+// =====================================
+
+function desenharFoto(img) {
+    const area = areaFoto;
+
+    // Calcula a proporção para caber inteira
+    // dentro da área configurada.
+
+    const proporcao = Math.min(
+        area.largura / img.width,
+        area.altura / img.height
+    );
+
+    const largura = img.width * proporcao;
+    const altura = img.height * proporcao;
+
+    // Centraliza a imagem na área
+
+    const x = area.x + (area.largura - largura) / 2;
+    const y = area.y + (area.altura - altura) / 2;
+
+    ctx.drawImage(
+        img,
+        x,
+        y,
+        largura,
+        altura
+    );
+}
+
+// =====================================
+// DESENHAR NOME
+// =====================================
+
+function desenharNome() {
+    const nome = nomePessoa.value.trim();
+
+    if (!nome) return;
+
+    ctx.save();
+
+    ctx.textAlign = configNome.alinhamento;
+    ctx.textBaseline = "middle";
+
+    ctx.font = `${configNome.tamanho}px "${configNome.fonte}"`;
+
+    // Contorno para melhorar a leitura
+    if (configNome.contorno) {
+        ctx.lineJoin = "round";
+        ctx.lineWidth = configNome.espessuraContorno;
+        ctx.strokeStyle = configNome.corContorno;
+
+        ctx.strokeText(
+            nome,
+            configNome.x,
+            configNome.y
+        );
+    }
+
+    // Texto principal
+    ctx.fillStyle = configNome.cor;
+
+    ctx.fillText(
+        nome,
+        configNome.x,
+        configNome.y
+    );
+
+    ctx.restore();
+}
+
+// =====================================
+// REDESENHAR TODA A ARTE
+// =====================================
+
+function redesenharArte() {
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    if (!fotoCarregada || !fotoAtual) {
+        return;
+    }
+
+    // 1. Desenha a foto
+    desenharFoto(fotoAtual);
+
+    // 2. Desenha a moldura por cima
+    if (molduraCarregada) {
+        ctx.drawImage(
+            template,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+    }
+
+    // 3. Desenha o nome por cima da moldura
+    desenharNome();
+}
 
 // =====================================
 // ESCOLHER FOTO
 // =====================================
 
-upload.addEventListener(
-    "change",
-    function (e) {
+upload.addEventListener("change", function (e) {
+    const file = e.target.files[0];
 
-        const file = e.target.files[0];
+    if (!file) {
+        fotoCarregada = false;
+        fotoAtual = null;
+        salvar.disabled = true;
+        areaNome.hidden = true;
+        nomePessoa.value = "";
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+    }
 
+    // Valida se é uma imagem
+    if (!file.type.startsWith("image/")) {
+        mensagem.textContent = "Selecione um arquivo de imagem.";
+        return;
+    }
 
-        if (!file) {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
 
-            fotoCarregada = false;
+    img.onload = function () {
+        fotoAtual = img;
+        fotoCarregada = true;
 
+        // Libera o campo de nome
+        areaNome.hidden = false;
+
+        // Atualiza a arte
+        if (molduraCarregada) {
+            redesenharArte();
+
+            salvar.disabled = false;
+            mensagem.textContent = "Sua arte está pronta!";
+        } else {
             salvar.disabled = true;
-
-            return;
+            mensagem.textContent = "Aguarde a moldura carregar.";
         }
 
+        URL.revokeObjectURL(url);
+    };
 
-        const img = new Image();
+    img.onerror = function () {
+        fotoCarregada = false;
+        fotoAtual = null;
 
+        salvar.disabled = true;
+        areaNome.hidden = true;
 
-        img.onload = function () {
+        mensagem.textContent =
+            "Não foi possível carregar essa foto.";
 
-            // =====================================
-            // LIMPA CANVAS
-            // =====================================
+        URL.revokeObjectURL(url);
+    };
 
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
+    img.src = url;
+});
 
+// =====================================
+// ATUALIZAR NOME EM TEMPO REAL
+// =====================================
 
-            // =====================================
-            // CALCULA PROPORÇÃO
-            // =====================================
+nomePessoa.addEventListener("input", function () {
+    if (!fotoCarregada) return;
 
-            const hRatio =
-                canvas.width / img.width;
-
-            const vRatio =
-                canvas.height / img.height;
-
-            const ratio =
-                Math.max(
-                    hRatio,
-                    vRatio
-                );
-
-
-            const newWidth =
-                img.width * ratio;
-
-            const newHeight =
-                img.height * ratio;
-
-
-            // =====================================
-            // CENTRALIZA
-            // =====================================
-
-            const x =
-                (canvas.width - newWidth) / 2;
-
-            const y =
-                (canvas.height - newHeight) / 2;
-
-
-            // =====================================
-            // DESENHA FOTO
-            // =====================================
-
-            ctx.drawImage(
-                img,
-                x,
-                y,
-                newWidth,
-                newHeight
-            );
-
-
-            // =====================================
-            // DESENHA MOLDURA
-            // =====================================
-
-            if (molduraCarregada) {
-
-                ctx.drawImage(
-                    template,
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-
-                fotoCarregada = true;
-
-                salvar.disabled = false;
-
-                mensagem.textContent =
-                    "Sua arte está pronta!";
-
-            } else {
-
-                fotoCarregada = false;
-
-                salvar.disabled = true;
-
-                mensagem.textContent =
-                    "Aguarde a moldura carregar.";
-
-            }
-
-
-            // Libera memória da foto
-            URL.revokeObjectURL(img.src);
-
-        };
-
-
-        // =====================================
-        // ERRO DA FOTO
-        // =====================================
-
-        img.onerror = function () {
-
-            fotoCarregada = false;
-
-            salvar.disabled = true;
-
-            mensagem.textContent =
-                "Não foi possível carregar essa foto.";
-
-        };
-
-
-        // =====================================
-        // CARREGA FOTO
-        // =====================================
-
-        img.src =
-            URL.createObjectURL(file);
-
-    }
-);
-
+    redesenharArte();
+});
 
 // =====================================
 // SALVAR IMAGEM
 // =====================================
 
-salvar.addEventListener(
-    "click",
-    async function () {
+salvar.addEventListener("click", async function () {
+    if (!fotoCarregada || !molduraCarregada) {
+        mensagem.textContent = "Escolha uma foto primeiro.";
+        return;
+    }
 
-        if (!fotoCarregada) {
+    mensagem.textContent = "Preparando sua imagem...";
 
-            mensagem.textContent =
-                "Escolha uma foto primeiro.";
-
-            return;
-        }
-
-
-        mensagem.textContent =
-            "Preparando sua imagem...";
-
-
-        // =====================================
-        // TRANSFORMA CANVAS EM BLOB
-        // =====================================
-
-        canvas.toBlob(
-            async function (blob) {
-
-                if (!blob) {
-
-                    mensagem.textContent =
-                        "Não foi possível gerar a imagem.";
-
-                    return;
-                }
-
-
-                // =====================================
-                // NOME DO ARQUIVO
-                // =====================================
-
-                const nomeArquivo =
-                    `cronossauros-${nomePagina}.png`;
-
-
-                // =====================================
-                // DETECTA IOS
-                // =====================================
-
-                const isIOS =
-                    /iPad|iPhone|iPod/.test(
-                        navigator.userAgent
-                    ) ||
-                    (
-                        navigator.platform === "MacIntel" &&
-                        navigator.maxTouchPoints > 1
-                    );
-
-
-                // =====================================
-                // IPHONE / IPAD
-                // =====================================
-
-                if (isIOS) {
-
-                    await salvarNoIOS(
-                        blob,
-                        nomeArquivo
-                    );
-
-                    return;
-                }
-
-
-                // =====================================
-                // ANDROID / COMPUTADOR
-                // =====================================
-
-                const url =
-                    URL.createObjectURL(blob);
-
-
-                const link =
-                    document.createElement("a");
-
-
-                link.href = url;
-
-                link.download =
-                    nomeArquivo;
-
-
-                document.body.appendChild(link);
-
-                link.click();
-
-                document.body.removeChild(link);
-
-
+    canvas.toBlob(
+        async function (blob) {
+            if (!blob) {
                 mensagem.textContent =
-                    "Imagem salva com sucesso!";
+                    "Não foi possível gerar a imagem.";
+                return;
+            }
 
+            const nomeArquivo =
+                `cronossauros-${nomePagina}.png`;
 
-                setTimeout(
-                    function () {
-
-                        URL.revokeObjectURL(url);
-
-                    },
-                    10000
+            // Detecta iOS
+            const isIOS =
+                /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (
+                    navigator.platform === "MacIntel" &&
+                    navigator.maxTouchPoints > 1
                 );
 
-            },
-            "image/png"
-        );
+            // iPhone / iPad
+            if (isIOS) {
+                await salvarNoIOS(blob, nomeArquivo);
+                return;
+            }
 
-    }
-);
+            // Android / computador
+            const url = URL.createObjectURL(blob);
 
+            const link = document.createElement("a");
+
+            link.href = url;
+            link.download = nomeArquivo;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            mensagem.textContent =
+                "Imagem salva com sucesso!";
+
+            setTimeout(function () {
+                URL.revokeObjectURL(url);
+            }, 10000);
+        },
+        "image/png"
+    );
+});
 
 // =====================================
 // SALVAR NO IPHONE / IPAD
 // =====================================
 
-async function salvarNoIOS(
-    blob,
-    nomeArquivo
-) {
-
+async function salvarNoIOS(blob, nomeArquivo) {
     try {
-
-        // =====================================
-        // CRIA ARQUIVO REAL
-        // =====================================
-
-        const arquivo =
-            new File(
-                [blob],
-                nomeArquivo,
-                {
-                    type: "image/png"
-                }
-            );
-
-
-        // =====================================
-        // VERIFICA COMPARTILHAMENTO
-        // =====================================
+        const arquivo = new File(
+            [blob],
+            nomeArquivo,
+            {
+                type: "image/png"
+            }
+        );
 
         if (
             navigator.share &&
@@ -381,108 +352,58 @@ async function salvarNoIOS(
                 files: [arquivo]
             })
         ) {
-
             mensagem.textContent =
                 "Abrindo opções para salvar...";
 
-
             await navigator.share({
-
                 files: [arquivo],
-
-                title:
-                    "Minha arte Cronossauros",
-
-                text:
-                    "Minha arte da corrida!"
-
+                title: "Minha arte Cronossauros",
+                text: "Minha arte da corrida!"
             });
-
 
             mensagem.textContent =
                 "Imagem pronta para salvar!";
 
-
             return;
         }
 
-
-        // =====================================
-        // FALLBACK IOS
-        // =====================================
-
         mostrarImagemParaSalvar(blob);
-
-    }
-
-    catch (erro) {
-
+    } catch (erro) {
         console.log(
             "Compartilhamento cancelado ou indisponível:",
             erro
         );
 
-
-        // Se o usuário apenas fechou o menu
-        if (
-            erro &&
-            erro.name === "AbortError"
-        ) {
-
+        if (erro && erro.name === "AbortError") {
             mensagem.textContent =
                 "Compartilhamento cancelado.";
 
             return;
         }
 
-
-        // Qualquer outro erro
         mostrarImagemParaSalvar(blob);
-
     }
-
 }
 
-
 // =====================================
-// FALLBACK
+// FALLBACK IOS
 // MOSTRA IMAGEM NA TELA
 // =====================================
 
 function mostrarImagemParaSalvar(blob) {
+    const url = URL.createObjectURL(blob);
 
-    const url =
-        URL.createObjectURL(blob);
-
-
-    // Remove tela anterior
-    const antigo =
-        document.getElementById(
-            "telaSalvarIOS"
-        );
-
+    const antigo = document.getElementById("telaSalvarIOS");
 
     if (antigo) {
-
         antigo.remove();
-
     }
 
+    const tela = document.createElement("div");
 
-    // =====================================
-    // CRIA TELA
-    // =====================================
-
-    const tela =
-        document.createElement("div");
-
-
-    tela.id =
-        "telaSalvarIOS";
-
+    tela.id = "telaSalvarIOS";
 
     tela.innerHTML = `
-
         <div class="ios-conteudo">
 
             <button
@@ -492,24 +413,15 @@ function mostrarImagemParaSalvar(blob) {
                 ×
             </button>
 
-
             <p class="ios-titulo">
-
                 Sua arte está pronta!
-
             </p>
-
 
             <p class="ios-instrucao">
-
                 Toque e segure a imagem
                 e escolha
-                <strong>
-                    "Salvar em Fotos"
-                </strong>
-
+                <strong>"Salvar em Fotos"</strong>
             </p>
-
 
             <img
                 src="${url}"
@@ -518,36 +430,17 @@ function mostrarImagemParaSalvar(blob) {
             >
 
         </div>
-
     `;
-
 
     document.body.appendChild(tela);
 
+    const fechar = document.getElementById("fecharIOS");
 
-    // =====================================
-    // FECHAR
-    // =====================================
-
-    const fechar =
-        document.getElementById(
-            "fecharIOS"
-        );
-
-
-    fechar.addEventListener(
-        "click",
-        function () {
-
-            tela.remove();
-
-            URL.revokeObjectURL(url);
-
-        }
-    );
-
+    fechar.addEventListener("click", function () {
+        tela.remove();
+        URL.revokeObjectURL(url);
+    });
 
     mensagem.textContent =
         "Toque e segure a imagem para salvar.";
-
 }

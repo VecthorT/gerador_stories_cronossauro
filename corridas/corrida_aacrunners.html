@@ -1,3 +1,4 @@
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,24 +11,17 @@
 
 <link rel="stylesheet" href="../style.css">
 
-
 <div class="container">
 
     <div class="header">
-
         <h1>CRONOSSAUROS</h1>
-
-        <h2>4ª CORRIDA DE ANIVESÁRIO A.A.C. RUNNERS</h2>
-
+        <h2>4ª CORRIDA DE ANIVERSÁRIO A.A.C. RUNNERS</h2>
         <p>
             Escolha sua foto e crie sua arte para compartilhar nos Stories.
         </p>
-
     </div>
 
-
     <div class="actions">
-
         <label class="upload" for="upload">
             📷 Escolher Foto
         </label>
@@ -35,20 +29,7 @@
         <button id="download" disabled>
             ⬇ Baixar Imagem
         </button>
-
     </div>
-
-<!-- 
-    <p class="marque">
-
-        Não esqueça de marcar:<br>
-
-        <strong>@circuitodinossauros</strong>
-        e
-        <strong>@ellitefitness_academia</strong>
-
-    </p> -->
-
 
     <input
         type="file"
@@ -57,21 +38,29 @@
         hidden
     >
 
+    <!-- CAMPO DO NOME -->
+    <div id="areaNome" class="area-nome" hidden>
+        <label for="nomePessoa">Digite seu nome:</label>
+        <input
+            type="text"
+            id="nomePessoa"
+            placeholder="Seu nome aqui"
+            maxlength="35"
+            autocomplete="off"
+        >
+    </div>
 
+    <!-- PRÉVIA -->
     <div class="preview">
-
         <canvas
             id="canvas"
             width="720"
             height="1080">
         </canvas>
-
     </div>
-
 
     <div id="mensagem" class="mensagem"></div>
 
 </div>
-
 
 <script src="../script.js"></script>
