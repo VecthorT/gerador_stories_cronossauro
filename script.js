@@ -47,7 +47,7 @@ const areaFoto = {
 
 const configNome = {
     x: canvas.width / 2,
-    y: canvas.height - 250,
+    y: canvas.height - 280,
     tamanho: 48,
     cor: "#FFFFFF",
     fonte: "Anton",
