@@ -36,9 +36,9 @@ template.src = caminhoMoldura;
 // Valores em pixels, relativos ao canvas.
 
 const areaFoto = {
-    x: 60,
-    y: -50,
-    largura: 600,
+    x: 0,
+    y: -100,
+    largura: 700,
     altura: 1500    
 };
 
@@ -47,7 +47,7 @@ const areaFoto = {
 
 const configNome = {
     x: canvas.width / 2,
-    y: canvas.height - 280,
+    y: canvas.height - 250,
     tamanho: 48,
     cor: "#FFFFFF",
     fonte: "Anton",
